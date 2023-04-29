@@ -1,2 +1,3 @@
-# chattr
-Simple chat app build with React, ChakraUI &amp; Nest.js
+# >_Chattr
+
+A simple chat app build with React, ChakraUI &amp; Nest.js
