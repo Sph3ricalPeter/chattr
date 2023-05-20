@@ -1,4 +1,3 @@
-import { StarIcon } from "@chakra-ui/icons";
 import {
   Card,
   HStack,
@@ -7,9 +6,7 @@ import {
   Heading,
   Image,
   Text,
-  Spacer,
   Divider,
-  Badge,
 } from "@chakra-ui/react";
 import { FunctionComponent } from "react";
 
