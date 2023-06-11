@@ -17,7 +17,8 @@ import {
   
     @HttpCode(HttpStatus.CREATED)
     @Post('register')
-    signUp(@Body() signUpDto: Record<string, any>) {
+    signUp(@Body() signUpDto: any) {
+      console.log("wtf", signUpDto)
       return this.authService.signUp(signUpDto.username, signUpDto.password);
     }
 

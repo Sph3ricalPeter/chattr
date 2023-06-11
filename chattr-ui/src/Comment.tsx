@@ -7,26 +7,21 @@ import {
   Image,
   Text,
   Divider,
+  Avatar,
 } from "@chakra-ui/react";
 import { FunctionComponent } from "react";
 
 interface CommentProps {
   author: string;
   text: string;
+  datetime: string;
 }
 
 const Comment: FunctionComponent<CommentProps> = (props: CommentProps) => {
   return (
     <Card w={"100%"} bg={"none"} variant={"unstyled"} pb={"0.5rem"}>
       <HStack alignItems={"flex-start"} spacing={"1rem"}>
-        <Image
-          objectFit="cover"
-          w={"3rem"}
-          h={"3rem"}
-          borderRadius={"3rem"}
-          src="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-          alt="User"
-        />
+        <Avatar size={"sm"} name={props.author.slice(0, 1) + " " + props.author.slice(1)}></Avatar>
         <Stack>
           <CardBody>
             <HStack>
@@ -34,15 +29,16 @@ const Comment: FunctionComponent<CommentProps> = (props: CommentProps) => {
               {props.author}
             </Heading>
             <Text fontSize={"xs"} color={"whiteAlpha.700"}>
-              Today at 7:01 PM
+              {/* Today at 7:01 PM */}
+              {props.datetime}
             </Text>
             </HStack>
             <Text py="0.5rem" color={"whiteAlpha.800"}>
               {props.text}
-              This is such an amazing chat that I can't even put it into words.
+              {/* This is such an amazing chat that I can't even put it into words.
               Great job team. We did it! But I have to add some more text else
               it won't wrap and I won't see how this thing look so. There you
-              go.
+              go. */}
             </Text>
           </CardBody>
         </Stack>

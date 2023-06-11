@@ -2,10 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import "@fontsource/raleway/300.css";
 import "@fontsource/raleway/500.css";
+import "@fontsource/raleway/700.css";
+import "@fontsource/open-sans/500.css";
 import "@fontsource/open-sans/700.css";
 import "@fontsource/open-sans/800.css";
 import "@fontsource/jetbrains-mono";
+import { AuthProvider } from "./Auth.tsx";
 
 const theme = extendTheme({
   fonts: {
@@ -86,7 +90,9 @@ const theme = extendTheme({
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </ChakraProvider>
   </React.StrictMode>
 );
