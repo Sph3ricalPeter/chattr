@@ -2,6 +2,7 @@ import {
   VStack,
   Input,
   Button,
+  Text,
 } from "@chakra-ui/react";
 import { ChangeEvent, KeyboardEvent, FunctionComponent, useEffect, useState, useRef } from "react";
 import Comment from "./Comment";
@@ -123,6 +124,7 @@ const Chat: FunctionComponent = () => {
         </VStack>
 
         {auth.isSignedIn() && <Input placeholder="Type something ..." variant={"main"} onChange={handleInputChange} value={inputValue} onKeyDown={handleKeyDown} />}
+        {!auth.isSignedIn() && <Text color={"whiteAlpha.500"}>Sign in to start chatting</Text>}
       </VStack>
     </VStack>
   );

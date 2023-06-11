@@ -151,8 +151,11 @@ const App = () => {
           </HStack>
           <HStack w={"100%"} justifyContent={"flex-end"} spacing={"1rem"}>
             <HStack spacing={"1rem"} fontWeight={"bold"} m={"0 1rem"}>
-              <Link href="#" color="white">
-                repo
+              <Link href="https://github.com/Sph3ricalPeter/chattr" target="blank" color="white">
+                <HStack spacing={"0.3rem"}>
+                  <Text>repo</Text>
+                  <Icon as={AiFillGithub} />
+                </HStack>
               </Link>
             </HStack>
             <HStack spacing={"1rem"}>
@@ -176,13 +179,14 @@ const App = () => {
             <Chat />
           </SocketProvider>
         </Flex>
-        <HStack w={"100%"} pb={"1rem"} justifyContent={"center"}>
-          <Text>
-            Made by{" "}
-            <Link href="https://github.com/Sph3ricalPeter">
-              Peter J. <Icon as={AiFillGithub} boxSize={"1rem"} />
-            </Link>
-          </Text>
+        <HStack w={"100%"} p={"1rem 0"} justifyContent={"center"}>
+          <Text>Made by{" "}</Text>
+          <Link href="https://github.com/Sph3ricalPeter" target="blank">
+            <HStack spacing={"0.3rem"}>
+              <Text>Peter J.</Text>,
+              <Icon as={AiFillGithub} />
+            </HStack>
+          </Link>
         </HStack>
       </VStack>
     </Flex>
