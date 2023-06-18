@@ -1,10 +1,10 @@
 import { createContext } from "react";
 import io from "socket.io-client";
+import { env } from "./Api";
 
-const SOCKET_URL = "http://localhost:80";
-
-export const socket = io(SOCKET_URL, {
+export const socket = io(`${env.VITE_SERVER_URL}:${env.VITE_SOCKET_PORT}`, {
   autoConnect: false,
+  secure: true,
 });
 export const SocketContext = createContext({});
 

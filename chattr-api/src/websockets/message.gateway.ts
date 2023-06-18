@@ -4,7 +4,7 @@ import { Server, Socket } from 'socket.io';
 import { MessageService } from './message.service';
 import { MessageFacade } from './message.facade';
 
-@WebSocketGateway(80, { cors: true })
+@WebSocketGateway({ cors: true })
 export class MessageGateway {
     constructor(
         private readonly messageFacade: MessageFacade,

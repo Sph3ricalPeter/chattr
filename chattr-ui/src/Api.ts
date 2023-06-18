@@ -1,7 +1,10 @@
 import { UserCredentials } from "./Auth";
 
+export const env = import.meta.env;
+const BASE_URL: string = `${env.VITE_SERVER_URL}:${env.VITE_API_PORT}`;
+
 export const signIn = async (creds: UserCredentials) => {
-  let authresult = await fetch('http://localhost:4000/auth/login', {
+  let authresult = await fetch(`${BASE_URL}/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,7 +20,7 @@ export const signIn = async (creds: UserCredentials) => {
 };
 
 export const signUp = async (creds: UserCredentials) => {
-    let signupresult = await fetch('http://localhost:4000/auth/register', {
+    let signupresult = await fetch(`${BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

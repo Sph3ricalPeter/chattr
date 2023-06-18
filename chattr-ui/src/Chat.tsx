@@ -9,6 +9,7 @@ import Comment from "./Comment";
 import { useDebouncedCallback } from "use-debounce";
 import { socket } from "./SocketContext";
 import { useAuth } from "./Auth";
+import { env } from "./Api";
 
 type Message = {
   clientId: string;
@@ -28,6 +29,9 @@ const ConnectionState = (props: ConnectionStateProps) => {
 const Chat: FunctionComponent = () => {
 
   const auth = useAuth();
+
+  console.log(import.meta.env);
+  
 
   const [inputValue, setInputValue] = useState("");
   const onChangeDebounced = useDebouncedCallback((value) => {
@@ -51,7 +55,8 @@ const Chat: FunctionComponent = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   const handleFetchData = async () => {
-    const response = await fetch('http://localhost:4000/messages');
+    // TODO: move this to the API file
+    const response = await fetch(`${env.VITE_SERVER_URL}:${env.VITE_API_PORT}/messages`);
     const data = await response.json();
     setMessages(data);
   }
