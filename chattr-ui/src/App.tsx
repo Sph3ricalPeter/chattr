@@ -28,7 +28,7 @@ import { AiFillGithub } from "react-icons/ai";
 import Chat from "./Chat";
 import { SocketProvider } from "./SocketContext";
 import { useAuth } from "./Auth";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { signIn, signUp } from "./Api";
 
 enum ModalType {
@@ -45,6 +45,7 @@ interface SignupModalProps {
 const SignupModal: FunctionComponent<SignupModalProps> = (props) => {
   const auth = useAuth();
   const toast = useToast();
+
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -120,6 +121,10 @@ const SignupModal: FunctionComponent<SignupModalProps> = (props) => {
 }
 
 const App = () => {
+  useEffect(() => {
+    document.title = "Chattr - Chatting has never been easier"
+  })
+
   const auth = useAuth();
 
   const signUpDisclosure = useDisclosure();
