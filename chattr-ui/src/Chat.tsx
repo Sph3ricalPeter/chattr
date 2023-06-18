@@ -18,14 +18,6 @@ type Message = {
   createdAt: string;
 }
 
-interface ConnectionStateProps {
-  isConnected: boolean;
-}
-
-const ConnectionState = (props: ConnectionStateProps) => {
-  return <p>State: {'' + props.isConnected}</p>;
-}
-
 const Chat: FunctionComponent = () => {
 
   const auth = useAuth();
@@ -34,7 +26,7 @@ const Chat: FunctionComponent = () => {
   
 
   const [inputValue, setInputValue] = useState("");
-  const onChangeDebounced = useDebouncedCallback((value) => {
+  const onChangeDebounced = useDebouncedCallback(() => {
     console.log("stopped typing");
   }, 500);
 
@@ -48,7 +40,7 @@ const Chat: FunctionComponent = () => {
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setInputValue(value);
-    onChangeDebounced(value);
+    onChangeDebounced();
   };
 
   const [isConnected, setIsConnected] = useState(socket.connected);

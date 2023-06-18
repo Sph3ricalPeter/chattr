@@ -19,9 +19,7 @@ import {
   ModalBody,
   ModalFooter,
   Input,
-  FormControl,
   UseDisclosureProps,
-  Toast,
   useToast,
   Avatar,
   Tooltip,
@@ -29,10 +27,9 @@ import {
 import { AiFillGithub } from "react-icons/ai";
 import Chat from "./Chat";
 import { SocketProvider } from "./SocketContext";
-import { AuthProvider, useAuth } from "./Auth";
-import { FunctionComponent, useEffect } from "react";
+import { useAuth } from "./Auth";
+import { FunctionComponent } from "react";
 import { signIn, signUp } from "./Api";
-import { generateUniqueColor } from "./Colors";
 
 enum ModalType {
   LOGIN,
