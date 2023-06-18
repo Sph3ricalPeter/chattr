@@ -49,16 +49,15 @@ const SignupModal: FunctionComponent<SignupModalProps> = (props) => {
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    console.log(event.target[0].value, event.target[1].value);
     if (props.type === ModalType.LOGIN) {
       signIn({
         username: event.target[0].value,
         password: event.target[1].value
       }).then((data) => {
         auth.signIn({
-          id: data.userId,
+          userId: data.userId,
           username: event.target[0].value,
-          accessToken: data.access_token,
+          accessToken: data.accessToken,
         });
         toast({
           title: "Login successfull",
@@ -69,7 +68,7 @@ const SignupModal: FunctionComponent<SignupModalProps> = (props) => {
       }).catch((err) => {
         console.log(err);
         toast({
-          title: "Invalid username or password",
+          title: err.message,
           status: "error",
           duration: 3000,
         })
@@ -88,7 +87,7 @@ const SignupModal: FunctionComponent<SignupModalProps> = (props) => {
       }).catch((err) => {
         console.log(err);
         toast({
-          title: "Account already exists",
+          title: err.message,
           status: "error",
           duration: 3000,
         })

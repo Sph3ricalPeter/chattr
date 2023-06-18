@@ -1,20 +1,20 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
-export type UserCredentials = {
+export type CredentialsDto = {
   username: string;
   password: string;
 }
 
-export type UserInfo = {
-  id: number;
+export type AuthDto = {
+  userId: number;
   username: string;
   accessToken: string;
 }
 
-interface ContextInterface {
-  user: UserInfo | null;
+interface AuthCtxInterface {
+  user: AuthDto | null;
   setState?: () => void;
-  signIn: (user: UserInfo) => void;
+  signIn: (user: AuthDto) => void;
   signOut: () => void;
   isSignedIn: () => boolean;
 }
@@ -34,10 +34,10 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = usePersistedAuth({ id: 0, username: "", accessToken: "" });
+  const [state, setState] = usePersistedAuth({ userId: 0, username: "", accessToken: "" });
 
   const contextValue = useMemo(() => {
-    const user = state as UserInfo;
+    const user = state as AuthDto;
     return createContextValue({ user, setState });
   }, [state, setState]);
 
@@ -50,18 +50,16 @@ function createContextValue({
   user,
   setState,
 }: {
-  user: UserInfo | null;
-  setState: (user: UserInfo | null) => void;
-}): ContextInterface {
+  user: AuthDto | null;
+  setState: (user: AuthDto | null) => void;
+}): AuthCtxInterface {
   return {
     user,
     signIn: (user) => {
-      console.log("setting user: ", user);
       setState(user)
     },
     signOut: () => {
-      console.log("signing out");
-      setState({ id: 0, username: "", accessToken: "" });
+      setState({ userId: 0, username: "", accessToken: "" });
     },
     isSignedIn: () => {
       return user?.accessToken !== "";
@@ -69,10 +67,10 @@ function createContextValue({
   };
 }
 
-function usePersistedAuth(defaultState: UserInfo | null) {
+function usePersistedAuth(defaultState: AuthDto | null) {
   const [state, setStateRaw] = useState(() => getStorageState(defaultState));
 
-  const setState = useCallback((newState: UserInfo | null) => {
+  const setState = useCallback((newState: AuthDto | null) => {
     setStateRaw(newState);
     setStorageState(newState);
   }, []);
@@ -80,7 +78,7 @@ function usePersistedAuth(defaultState: UserInfo | null) {
   return [state, setState];
 }
 
-function getStorageState(defaultState: UserInfo | null) {
+function getStorageState(defaultState: AuthDto | null) {
   if (!window.localStorage) {
     return defaultState;
   }
@@ -93,7 +91,7 @@ function getStorageState(defaultState: UserInfo | null) {
   try {
     const user = JSON.parse(rawData);
 
-    if (user && user.id && user.username && user.accessToken) {
+    if (user && user.userId && user.username && user.accessToken) {
       return user;
     }
   } catch (err) {
@@ -103,7 +101,7 @@ function getStorageState(defaultState: UserInfo | null) {
   return defaultState;
 }
 
-function setStorageState(newState: UserInfo | null): void {
+function setStorageState(newState: AuthDto | null): void {
   if (!window.localStorage) {
     return;
   }

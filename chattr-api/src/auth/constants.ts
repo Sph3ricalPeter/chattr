@@ -1,3 +1,8 @@
 export const jwtConstants = {
-    secret: 'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
+    secret: 'GIGASAFESECRET',
 };
+
+export const errorMessages = {
+    invalidCredentials: 'Invalid username or password',
+    usernameTaken: 'Username already exists',
+}

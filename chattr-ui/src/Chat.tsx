@@ -3,16 +3,17 @@ import {
   Input,
   Button,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { ChangeEvent, KeyboardEvent, FunctionComponent, useEffect, useState, useRef } from "react";
 import Comment from "./Comment";
 import { useDebouncedCallback } from "use-debounce";
 import { socket } from "./SocketContext";
 import { useAuth } from "./Auth";
-import { env } from "./Api";
+import { getMessages } from "./Api";
+import moment from "moment";
 
-type Message = {
-  clientId: string;
+export type MessageDto = {
   username: string;
   text: string;
   createdAt: string;
@@ -21,54 +22,73 @@ type Message = {
 const Chat: FunctionComponent = () => {
 
   const auth = useAuth();
+  const toast = useToast();
 
-  console.log(import.meta.env);
-  
+  const [msgInputValue, setMsgInputValue] = useState("");
+  const [isSocketConnected, setIsSocketConnected] = useState(socket.connected);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [messages, setMessages] = useState<MessageDto[]>([]);
 
-  const [inputValue, setInputValue] = useState("");
+  const lastCommentElRef = useRef<HTMLInputElement>(null);
+
+  // TODO: on debounce stop showing typing indicator (another ws channel)
   const onChangeDebounced = useDebouncedCallback(() => {
     console.log("stopped typing");
   }, 500);
 
   const connect = () => {
-    if (socket.disconnected) {
-      console.log("connecting");
+    if (socket.disconnected && !isConnecting) {
       socket.connect()
+      setIsConnecting(true);
     }
   }
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    setInputValue(value);
+    setMsgInputValue(value);
     onChangeDebounced();
   };
 
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [messages, setMessages] = useState<Message[]>([]);
-
   const handleFetchData = async () => {
-    // TODO: move this to the API file
-    const response = await fetch(`${env.VITE_SERVER_URL}:${env.VITE_API_PORT}/messages`);
-    const data = await response.json();
-    setMessages(data);
+    getMessages().then((messages) => {
+      setMessages(messages);
+    }).catch((error) => {
+      console.log(error);
+      toast({
+        title: "Failed to fetch message history",
+        status: "error",
+        duration: 3000,
+      })
+    });
   }
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      if (msgInputValue === '' || !auth.isSignedIn()) {
+        return;
+      }
+      // 👇 Get input value
+      socket.timeout(5000).emit('sendMessage', { username: auth.user?.username, text: msgInputValue });
+      setMsgInputValue('');
+    }
+  };
 
   useEffect(() => {
     connect();
 
     function onConnect() {
-      setIsConnected(true);
+      setIsSocketConnected(true);
+      setIsConnecting(false);
       console.log("connected");
       handleFetchData();
     }
 
     function onDisconnect() {
-      setIsConnected(false);
+      setIsSocketConnected(false);
       console.log("disconnected");
     }
 
-    function onReceiveMessageEvent(payload: Message) {
-      console.log(`[${payload.createdAt}; ${payload.clientId}] ${payload.username}: ${payload.text}`);
+    function onReceiveMessageEvent(payload: MessageDto) {
       setMessages(previous => [...previous, payload]);
     }
 
@@ -83,21 +103,9 @@ const Chat: FunctionComponent = () => {
     };
   }, []);
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      if (inputValue === '' || !auth.isSignedIn()) {
-        return;
-      }
-      // 👇 Get input value
-      socket.timeout(5000).emit('sendMessage', { username: auth.user?.username, message: inputValue });
-      setInputValue('');
-    }
-  };
-
-  const bottomRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    lastCommentElRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   return (
@@ -111,16 +119,17 @@ const Chat: FunctionComponent = () => {
         w={"100%"}
       >
         <VStack h={"60vh"} w={"100%"} overflow={"scroll"}>
-          {isConnected && messages.length === 0 &&
+          {isSocketConnected && messages.length === 0 &&
             <VStack h={"100%"} justifyContent={"center"}><p>No messages yet</p></VStack>}
-          {!isConnected && <VStack h={"100%"} justifyContent={"center"}><Button variant={"secondary"} onClick={connect}>Reconnect</Button></VStack>}
+          {!isSocketConnected && <VStack h={"100%"} justifyContent={"center"}><Button variant={"secondary"} onClick={connect}>Reconnect</Button></VStack>}
           {messages.length > 0 && messages.map((msg) => (
-            <Comment author={msg.username} text={msg.text} datetime={msg.createdAt} />
+            // format datetime to say "Today at 12:00"
+            <Comment key={msg.createdAt} author={msg.username} text={msg.text} datetime={moment(msg.createdAt).fromNow()} />
           ))}
-          <div ref={bottomRef} />
+          <div ref={lastCommentElRef} />
         </VStack>
 
-        {auth.isSignedIn() && <Input placeholder="Type something ..." variant={"main"} onChange={handleInputChange} value={inputValue} onKeyDown={handleKeyDown} />}
+        {auth.isSignedIn() && <Input placeholder="Type something ..." variant={"main"} onChange={handleInputChange} value={msgInputValue} onKeyDown={handleKeyDown} />}
         {!auth.isSignedIn() && <Text color={"whiteAlpha.500"}>Sign in to start chatting</Text>}
       </VStack>
     </VStack>

@@ -24,25 +24,20 @@ const Comment: FunctionComponent<CommentProps> = (props: CommentProps) => {
         <Stack>
           <CardBody>
             <HStack>
-            <Heading size="sm" color={"whiteAlpha.900"}>
-              {props.author}
-            </Heading>
-            <Text fontSize={"xs"} color={"whiteAlpha.700"}>
-              {/* Today at 7:01 PM */}
-              {props.datetime}
-            </Text>
+              <Heading size="sm" color={"whiteAlpha.900"}>
+                {props.author}
+              </Heading>
+              <Text fontSize={"xs"} color={"whiteAlpha.700"}>
+                {props.datetime}
+              </Text>
             </HStack>
             <Text py="0.5rem" color={"whiteAlpha.800"}>
               {props.text}
-              {/* This is such an amazing chat that I can't even put it into words.
-              Great job team. We did it! But I have to add some more text else
-              it won't wrap and I won't see how this thing look so. There you
-              go. */}
             </Text>
           </CardBody>
         </Stack>
       </HStack>
-      <Divider color={"whiteAlpha.100"} mt={"0.5rem"}/>
+      <Divider color={"whiteAlpha.100"} mt={"0.5rem"} />
     </Card>
   );
 };

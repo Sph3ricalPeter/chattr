@@ -2,43 +2,47 @@ import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/co
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { Prisma } from '@prisma/client';
+import { AuthDto } from './auth.dto';
+import { errorMessages } from './constants';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private usersService: UsersService,
-        private jwtService: JwtService
-    ) { }
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService
+  ) { }
 
-    async signUp(username: string, pass: string) {
-        const hash = await bcrypt.hash(pass, 10);
+  async signUp(data: Prisma.UserCreateInput): Promise<string> {
+    const hash = await bcrypt.hash(data.password, 10);
 
-        try {
-            const user = await this.usersService.createUser({
-                username: username,
-                password: hash,
-            });
-            return user.username;
-        } catch (err) {
-            throw new ConflictException();
-        }
+    try {
+      const user = await this.usersService.createUser({
+        ...data,
+        password: hash,
+      });
+      return user.username;
+    } catch (err) {
+      throw new ConflictException(errorMessages.usernameTaken);
+    }
+  }
+
+  async signIn(data: Prisma.UserCreateInput): Promise<AuthDto> {
+    const user = await this.usersService.user({ username: data.username });
+    if (!user) {
+      throw new UnauthorizedException(errorMessages.invalidCredentials);
     }
 
-    async signIn(username: string, pass: string): Promise<{ userId: number, access_token: string }> {
-        const user = await this.usersService.user({ username: username });
-        if (!user) {
-            throw new UnauthorizedException();
-        }
-
-        const match = await bcrypt.compare(pass, user?.password);
-        if (!match) {
-            throw new UnauthorizedException();
-        }
-
-        const payload = { username: user.username, sub: user.id };
-        return {
-            userId: user.id,
-            access_token: await this.jwtService.signAsync(payload),
-        };
+    const match = await bcrypt.compare(data.password, user?.password);
+    if (!match) {
+      throw new UnauthorizedException(errorMessages.invalidCredentials);
     }
+
+    return {
+      userId: user.id,
+      username: user.username,
+      accessToken: await this.jwtService.signAsync({ username: user.username, sub: user.id }),
+    };
+  }
+
 }

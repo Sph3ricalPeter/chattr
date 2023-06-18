@@ -9,4 +9,4 @@ import { MessageFacade } from './message.facade';
   controllers: [MessageController],
   providers: [MessageService, MessageFacade, MessageGateway, PrismaService],
 })
-export class MessageModule {}
+export class MessageModule { }

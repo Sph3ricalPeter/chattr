@@ -1,36 +1,38 @@
 import {
-    Body,
-    Controller,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Post,
-    Request,
-    UseGuards
-  } from '@nestjs/common';
-  import { AuthGuard } from './auth.guard';
-  import { AuthService } from './auth.service';
-  
-  @Controller('auth')
-  export class AuthController {
-    constructor(private authService: AuthService) {}
-  
-    @HttpCode(HttpStatus.CREATED)
-    @Post('register')
-    signUp(@Body() signUpDto: any) {
-      return this.authService.signUp(signUpDto.username, signUpDto.password);
-    }
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Request,
+  UseGuards
+} from '@nestjs/common';
+import { AuthGuard } from './auth.guard';
+import { AuthFacade } from './auth.facade';
+import { AuthDto } from './auth.dto';
+import { SignupDto } from './signup.dto';
+import { LoginDto } from './login.dto';
 
-    @HttpCode(HttpStatus.OK)
-    @Post('login')
-    signIn(@Body() signInDto: Record<string, any>) {
-      return this.authService.signIn(signInDto.username, signInDto.password);
-    }
-  
-    @UseGuards(AuthGuard)
-    @Get('profile')
-    getProfile(@Request() req) {
-      return req.user;
-    }
+@Controller('auth')
+export class AuthController {
+  constructor(private authFacade: AuthFacade) { }
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post('register')
+  signUp(@Body() credentials: SignupDto): Promise<string> {
+    return this.authFacade.signUp(credentials);
   }
-  
+
+  @HttpCode(HttpStatus.OK)
+  @Post('login')
+  signIn(@Body() credentials: LoginDto): Promise<AuthDto> {
+    return this.authFacade.signIn(credentials);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
+  }
+}
